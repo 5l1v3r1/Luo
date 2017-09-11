@@ -8,7 +8,7 @@ try:
     from models import *
 except Exception as error:
     print("I guess you started this module as Filop(True) ---",error)
-    time.sleep(3)
+    time.sleep(1)
 
 os_name = os.name
 

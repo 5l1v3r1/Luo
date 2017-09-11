@@ -11,18 +11,24 @@ from time import gmtime, strftime
 import pyttsx3
 from google import search
 
-fi = Filop(True) # gerçek zamanlı dosya taraması yapması için
-r = speech.Recognizer()
-os_name = os.name
-os_sep = os.sep
-os_environ = os.environ
-desktop_path  = []
-if os_name == "posix":
-    for path in os.listdir(os_sep+"home"):
-        desktop_path.append(os_sep+"home"+os_sep+path+"Desktop")
-elif os_name == "nt":
-    desktop_path.append(os_environ["HOMEDRIVE"]+os_environ["HOMEPATH"]+os_sep+"Desktop")
+class Settings():
+    "luo için gereken ayarların sınıfıdır bütün ayarlar buradan yapılacaktır"
+    def __init__(self):
+        self.fi = Filop(True) # gerçek zamanlı dosya taraması yapması için/db ye ihtiyac duymaması için true
+        self.r = speech.Recognizer() # bağlanıyor dinlemek için
+        self.talk_engine = pyttsx3.init()
+        self.os_name = os.name
+        self.os_sep = os.sep
+        self.os_environ = os.environ
+        self.desktop_path  = [] # masaüstü yol adresi
+        if self.os_name == "posix":
+            for path in os.listdir(self.os_sep+"home"):
+                self.desktop_path.append(self.os_sep+"home"+self.os_sep+path+"Desktop")
+        elif self.os_name == "nt":
+            self.desktop_path.append(self.os_environ["HOMEDRIVE"]+self.os_environ["HOMEPATH"]+self.os_sep+"Desktop")
+            print(self.desktop_path)
 
+set_luo = Settings()
 
 class Search(): # arama işlemleri
     def __init__(self,data):
@@ -43,13 +49,13 @@ class Search(): # arama işlemleri
             self.web(search_web.group(1))
 
     def file(self,file_name): # dosya arama işlemi
-        Lucy().talk("I started searcing for you, sir ,file searched   "+file_name)
-        for files in fi.searchfile(file_name):
+        Luo().talk("I started searcing for you, sir ,file searched   "+file_name)
+        for files in set_luo.fi.searchfile(file_name):
             print(str(self.number)+"    "+files)
             self.number+=1
             self.files_.append(files)
         if self.files_!=[]:
-            data = Lucy().read(self.files_,talk = "the file search is over, sir")
+            data = Luo().read(self.files_,talk = "the file search is over, sir")
             """talk de yazan metin söylendikten sonra isteğe bağlı files_ listesini okutuyorum istemez ise ne yapma istiyosa
             söylüyor bende söylenen veriyi alıp devam ediyorum"""
             num = re.search("^open ([0-9])$",data)
@@ -59,29 +65,29 @@ class Search(): # arama işlemleri
     def folder(self,search_folder): # klasör arama işlemi
         search_selection = re.search("folder name (.*)",search_folder)
         if search_selection == None:
-            Lucy().talk("I started searcing for you sir ,searcing all folders")
+            Luo().talk("I started searcing for you sir ,searcing all folders")
             with open("all_folder.txt","a") as file_:
                 for all_folder in fi.isdir():
                     file_.write(all_folder)
-            Lucy().talk("I saved all the files for you in a text file name all_folder")
+            Luo().talk("I saved all the files for you in a text file name all_folder")
         elif search_selection != None:
             folder_name = search_selection.group(1)
-            Lucy().talk("I started searcing for you sir ,folder searched "+folder_name)
-            for folder in fi.searchfolder(folder_name):
+            Luo().talk("I started searcing for you sir ,folder searched "+folder_name)
+            for folder in set_luo.fi.searchfolder(folder_name):
                 print(str(self.number)+"     "+folder)
                 self.number+=1
                 self.folders_.append(folder)
             if self.folders_!=[]:
-                data = Lucy().read(self.folders_,talk = "the folder search is over, sir")
+                data = Luo().read(self.folders_,talk = "the folder search is over, sir")
                 num = re.search("^open ([0-9].*)$",data)
                 if num != None:
                     Open(self.folders_,num.group(1))
             else:
-                Lucy().talk("the folder search is over, sir match not found")
+                Luo().talk("the folder search is over, sir match not found")
 
     def drivers(self): # sürücü arama işlemi
-        drivers = [x for x in fi.drivers()]
-        Lucy().talk(("drivers on your computer,").split()+drivers)
+        drivers = [x for x in set_luo.fi.drivers()]
+        Luo().talk(("drivers on your computer,").split()+drivers)
 
     def web(self,search_web): # web arama işlemi
         urls = []
@@ -90,7 +96,7 @@ class Search(): # arama işlemleri
             self.number+=1
             urls.append(url)
             print(str(self.number)+"    "+url)
-        data = Lucy().read(urls,talk = "the web search is over, sir")
+        data = Luo().read(urls,talk = "the web search is over, sir")
         num = re.search("^open ([0-9])$",data)
         if num != None:
             Open(urls,num.group(1))
@@ -99,17 +105,17 @@ class Search(): # arama işlemleri
 class Open():
     "uygulama klasör vs açma işlemleri"
     def __init__(self,o_list,data):
-        if os_name == "posix":
-            Lucy().talk("This feature is only available for windows systems")
+        if set_luo.os_name == "posix":
+            Luo().talk("This feature is only available for windows systems")
             return None
-        elif os_name == "nt": # açma çalıştırma olayları sadece windows da var
+        elif set_luo.os_name == "nt": # açma çalıştırma olayları sadece windows da var
             self.data = data
             self.o_list = o_list
             driver = re.search("^open (.) (driver|drivers)$",self.data)
             application = re.search("^open (.*) (application|applications)$",self.data)
             "hafızasında kalan en son şeyi yani ekranda gördüğü listeyi açtırmak isterse"
             if driver != None:
-                self.dopen(driver.group(1)+":"+os_sep)
+                self.dopen(driver.group(1)+":"+set_luo.os_sep)
             elif application != None:
                 self.open_application(application.group(1))
             elif o_list != None: # arama -tarama işlemi bittikten sonra seçilen dosya açılır
@@ -129,35 +135,34 @@ class Open():
             except:
                 title=self.o_list[numb-1]
             print(title)
-            Lucy().talk(title+" , is opened sir")
+            Luo().talk(title+" , is opened sir")
         except:
-            Lucy().talk("error opening file")
+            Luo().talk("error opening file")
 
     def dopen(self,driver):
         " sürücülerden birini açmak isterse "
-        drivers = [d for d in fi.drivers()]
+        drivers = [d for d in set_luo.fi.drivers()]
         if driver in drivers:
             os.startfile(driver)
-            Lucy().talk(driver+ ", driver , is opened sir")
+            Luo().talk(driver+ ", driver , is opened sir")
         else:
-            Lucy().talk(driver+" driver is not in your computer ")
+            Luo().talk(driver+" driver is not in your computer ")
 
     def open_application(self,application):
         "istenilen uygulama masaüstünde varsa çalıştırır"
-        print(application)
-        for x in os.listdir(desktop_path):
-            x=x.lower()
-            if application in x:
-                os.startfile(desktop_path+"\\"+x)
-                print(desktop_path+"\\"+x)
-                Lucy().talk(application+" is open , sir")
+        for path in set_luo.desktop_path:
+            for x in os.listdir(path):
+                x=x.lower()
+                if application in x:
+                    os.startfile(path+"\\"+x)
+                    Luo().talk(application+" is open , sir")
 
 
-class Lucy():
+class Luo():
     def __init__(self,data = None):
         "Bildiği şeyler ve diğer organlarına yönlendirmeleri - beyin ve omurilik"
         self.data = data
-        self.r = r
+        self.r = set_luo.r
         if self.data != None:
             if re.search("^(what time is it|what time|time)",self.data) != None:
                 self.talk(strftime("%Y-%m-%d %H:%M:%S", gmtime()))
@@ -165,7 +170,7 @@ class Lucy():
                 Search(self.data)
             elif re.search("^open (. driver|drivers)|[0-9]|.* applications|.* application$",self.data) != None:
                 Open(None,self.data)
-            elif re.search("^(help|help me|lucy help|lucy help me|hey lucy help me|hey lucy|hey lucy help)",self.data) != None:
+            elif re.search("^(help|help me)",self.data) != None:
                 self.read(explain())
 
     def talk(self,text):
@@ -181,15 +186,12 @@ class Lucy():
         else:
             return
         print(text)
-        engine = pyttsx3.init()
-        engine.say(text)
-        engine.runAndWait();
+        set_luo.talk_engine.say(text)
+        set_luo.talk_engine.runAndWait();
 
     def listen(self,explain="Say something!"):
         "dinleyip söylenini anlamak için - duymak"
-        print("-"*30)
-        print(explain)
-        print("-"*30)
+        self.talk(explain)
         with speech.Microphone() as source:
             while True:
                 data = ""
@@ -222,44 +224,32 @@ class Lucy():
                     open_list += i+","
             text = open_list
             if talk:
-                Lucy().talk(talk)
+                Luo().talk(talk)
             else:
                 pass
         if talk == False:
             print(text)
         while True:
-            data = Lucy().listen()
+            data = Luo().listen()
             if re.search("^(read this|read|yes read|yeah read|yes read this)",data) != None:
-                Lucy().talk("yes sir,"+text)
+                Luo().talk("yes sir,"+text)
                 return data
             elif data !="":
                 return data # eğer lazım olursa söylenen cümleyi kullanırım ,olmaz ise kullanmam
 
 def explain():
     cds="""
-       # you can check or run with talking
-
-        commands that can be executed by the program
-        ---------
-
-         use as follow
-         -----
-
          ```python
-         from assis import Lucy
-         Lucy(Lucy().listen())
+         from assis import Luo
+         Luo(Luo().listen())
          ```
         - and you can speak
 
          example speak ;
          ------
          + help
+           - help
            - help me
-           - lucy help
-           - lucy help me
-           - hey lucy help me
-           - hey lucy
-           - hey lucy help
 
          + you can learn the time
            - what time is it
@@ -273,6 +263,15 @@ def explain():
            - search file name readme
            - search on web python
 
+         + Luo can read the text on the screen
+           - read this
+           - read
+           - yes read
+           - yes read this
+           - yeah read
+
+       if os.name == "nt": # you can run this commands
+
          + you can open drivers of your computer
            - open d driver
 
@@ -280,14 +279,7 @@ def explain():
            - open google chrome application
            - open media player application
 
-         + lucy can read the text on the screen
-           - read this
-           - read
-           - yes read
-           - yes read this
-           - yeah read
-
-         + lucy can open or run on the screen
+         + Luo can open or run on the screen
            - open 3
            - open 5
 
@@ -298,24 +290,32 @@ def explain():
         ------
        ```python
 
-       from assis import Lucy,Search
-
-       Lucy("open d drivers")
-       Lucy("search folder name python")
-       Lucy("search drivers")
-       Lucy("search file name django")
-       Lucy("open chrome applications")
-       Lucy("search on web face")
-       Lucy("search on web python programming")
-
+       from assis import Luo,Search
+       import os
        while True:
-           Lucy(Lucy().listen())
+           Luo(Luo().listen())
+       # or
 
+       Luo("open d drivers")
+       Luo("search folder name python")
+       Luo("search drivers")
+       Luo("search file name django")
+       Luo("search on web face")
+       Luo("search on web python programming")
        Search("search driver")
-       Search("search folder name python")
-       Search("search file name python")
        Search("search all folder")
-
-        ```
-        """
+       Luo().talk("hello everyone")
+       data = Luo().listen("can i help yoo ?")
+       data = Luo().listen()
+       if os.name == "nt":
+         Luo("open chrome applications")
+       # to read text on the screen
+       read = Luo().read("read this messages .")
+       # before print(read this messages)
+       # and
+       # if it says yes read this
+       # after
+       # Luo talk = read this messages and return this data
+       # does not say yes read this and return this data
+       """
     return cds

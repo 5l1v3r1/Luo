@@ -1,4 +1,4 @@
-[![Licence](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/hakancelik96/lucy/blob/master/LICENSE.txt)
+[![Licence](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/hakancelik96/Luo/blob/master/LICENSE.txt)
 
 before
 ---
@@ -14,20 +14,16 @@ before
   -----
 
   ```python
-  from assis import Lucy
-  Lucy(Lucy().listen())
+  from assis import Luo
+  Luo(Luo().listen())
   ```
  - and you can speak
 
   example speak ;
   ------
   + help
+    - help
     - help me
-    - lucy help
-    - lucy help me
-    - hey lucy help me
-    - hey lucy
-    - hey lucy help
 
   + you can learn the time
     - what time is it
@@ -41,7 +37,7 @@ before
     - search file name readme
     - search on web python
 
-  + lucy can read the text on the screen
+  + Luo can read the text on the screen
     - read this
     - read
     - yes read
@@ -57,7 +53,7 @@ if os.name == "nt": # you can run this commands
     - open google chrome application
     - open media player application
 
-  + lucy can open or run on the screen
+  + Luo can open or run on the screen
     - open 3
     - open 5
 
@@ -68,32 +64,32 @@ example ;
  ------
 ```python
 
-from assis import Lucy,Search
+from assis import Luo,Search
 import os
 while True:
-    Lucy(Lucy().listen())
+    Luo(Luo().listen())
 # or
 
-Lucy("open d drivers")
-Lucy("search folder name python")
-Lucy("search drivers")
-Lucy("search file name django")
-Lucy("search on web face")
-Lucy("search on web python programming")
+Luo("open d drivers")
+Luo("search folder name python")
+Luo("search drivers")
+Luo("search file name django")
+Luo("search on web face")
+Luo("search on web python programming")
 Search("search driver")
 Search("search all folder")
-Lucy().talk("hello everyone")
-data = Lucy().listen("can i help yoo ?")
-data = Lucy().listen()
+Luo().talk("hello everyone")
+data = Luo().listen("can i help yoo ?")
+data = Luo().listen()
 if os.name == "nt":
-  Lucy("open chrome applications")
+  Luo("open chrome applications")
 # to read text on the screen
-read = Lucy().read("read this messages .")
+read = Luo().read("read this messages .")
 # before print(read this messages)
 # and
 # if it says yes read this
 # after
-# lucy talk = read this messages and return this data
+# Luo talk = read this messages and return this data
 # does not say yes read this and return this data
 
 
