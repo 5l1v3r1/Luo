@@ -1,0 +1,8 @@
+mutagen
+gTTS
+SpeechRecognition
+requests
+socket
+bs4
+google
+pyaudio
