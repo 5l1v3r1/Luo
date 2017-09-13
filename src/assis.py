@@ -96,7 +96,7 @@ class Search(): # arama işlemleri
             self.number+=1
             urls.append(url)
             print(str(self.number)+"    "+url)
-        data = Luo().read(urls,talk = "the web search is over, sir")
+        data = Luo().read(urls,talk = "these are the things, I found on the internet, for you")
         num = re.search("^open ([0-9])$",data)
         if num != None:
             Open(urls,num.group(1))
@@ -172,6 +172,8 @@ class Luo():
                 Open(None,self.data)
             elif re.search("^(help|help me)",self.data) != None:
                 self.read(explain())
+            else:
+                self.Search("search on web {}".format(self.data))
 
     def talk(self,text):
         "bu yazıları okutmak için - konuşmak"
