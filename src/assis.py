@@ -26,7 +26,6 @@ class Settings():
                 self.desktop_path.append(self.os_sep+"home"+self.os_sep+path+"Desktop")
         elif self.os_name == "nt":
             self.desktop_path.append(self.os_environ["HOMEDRIVE"]+self.os_environ["HOMEPATH"]+self.os_sep+"Desktop")
-            print(self.desktop_path)
 
 set_luo = Settings()
 
@@ -173,7 +172,7 @@ class Luo():
             elif re.search("^(help|help me)",self.data) != None:
                 self.read(explain())
             else:
-                self.Search("search on web {}".format(self.data))
+                Search("search on web {}".format(self.data))
 
     def talk(self,text):
         "bu yazıları okutmak için - konuşmak"
